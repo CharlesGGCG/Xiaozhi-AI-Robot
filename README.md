@@ -20,30 +20,9 @@ Built during a one-month R&D internship (June–July 2025). The brief was open o
 
 ## Architecture
 
-```mermaid
-flowchart LR
-  subgraph Device["ESP32-S3 device"]
-    mic["Microphone"] --> codec["Audio codec"] --> ws["WebSocket client"]
-    ws --> out["OLED + speaker"]
-  end
+![Architecture](images/architecture.svg)
 
-  subgraph Laptop["Local server — one laptop"]
-    voice["Python voice server<br/>ASR → LLM → TTS"]
-    api["manager-api<br/>Java 21"]
-    db[("MySQL 8")]
-    cache[("Redis 7")]
-    console["manager-web<br/>Vue"]
-    voice <--> api
-    api --> db
-    api --> cache
-    console --> api
-  end
-
-  ws <--> voice
-  llm["LLM endpoints<br/>Zhipu · Qwen · DeepSeek · Ollama"] --> voice
-```
-
-The device never talks to a model directly. It talks to the voice server over one WebSocket; the server owns the pipeline, the console owns configuration, and MySQL/Redis hold devices, parameters and session state.
+*The device never calls a model directly. It holds one WebSocket; the laptop owns the pipeline and the configuration.*
 
 ## Hardware
 
